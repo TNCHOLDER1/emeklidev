@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmekliReis Portfolio</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #030508;
+            --card-bg: rgba(13, 13, 13, 0.9);
+            --text-main: #ffffff;
+            --text-dim: #8b949e;
+            --accent-gold: #ffcc00;
+            --accent-glow: rgba(255, 204, 0, 0.15);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --success: #23a559;
+            --gradient-main: linear-gradient(135deg, #fff 0%, var(--accent-gold) 100%);
+            --gradient-text: linear-gradient(90deg, #ffcc00, #ffffff, #ffcc00);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            min-height: 100vh;
+        }
+
+        .grad-text {
+            background: var(--gradient-text);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine { to { background-position: 200% center; } }
+
+        #particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -1; }
+
+        .glow-overlay {
+            position: fixed; width: 60vw; height: 60vw;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            z-index: -2; pointer-events: none; top: -10vw; left: -10vw;
+        }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 40px; }
+
+        .lang-switcher {
+            position: fixed; top: 25px; right: 25px; z-index: 2000;
+            background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(15px);
+            border: 1px solid var(--border-color); padding: 10px 18px; border-radius: 20px;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+            font-weight: 700; font-size: 0.9rem; color: var(--text-main);
+            transition: 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .lang-switcher:hover { border-color: var(--accent-gold); box-shadow: 0 0 15px var(--accent-glow); transform: translateY(-2px); }
+        .lang-switcher i { color: var(--accent-gold); font-size: 1rem; }
+
+        .sidebar-nav {
+            position: fixed; right: 25px; top: 50%; transform: translateY(-50%);
+            background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(15px);
+            border: 1px solid var(--border-color); padding: 25px 12px;
+            border-radius: 40px; display: flex; flex-direction: column; gap: 20px; z-index: 1000;
+        }
+        .sidebar-nav a { color: var(--text-dim); font-size: 1.3rem; transition: 0.3s; text-decoration: none; position: relative; }
+        .sidebar-nav a:hover { color: var(--accent-gold); transform: scale(1.2); }
+        .sidebar-nav a::after { content: ''; position: absolute; left: -20px; top: 50%; transform: translateY(-50%) scale(0); width: 5px; height: 5px; background: var(--accent-gold); border-radius: 50%; transition: 0.3s; }
+        .sidebar-nav a:hover::after { transform: translateY(-50%) scale(1); }
+
+        .hero { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .hero h1 { font-size: 6rem; font-weight: 800; margin-bottom: 15px; letter-spacing: -3px; filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.3)); }
+        .hero p { color: var(--text-dim); font-size: 1.4rem; max-width: 800px; line-height: 1.6; font-weight: 300; margin-bottom: 30px; }
+
+        .spotify-player {
+            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px; width: 100%; max-width: 720px; padding: 24px;
+            display: flex; flex-direction: column; gap: 16px; backdrop-filter: blur(25px);
+            margin-top: 15px; position: relative;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            text-align: left;
+        }
+        .player-top { display: flex; align-items: center; gap: 20px; position: relative; }
+        .spotify-img { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; box-shadow: 0 8px 20px rgba(0,0,0,0.5); transition: transform 0.3s ease; }
+        .spotify-player:hover .spotify-img { transform: scale(1.04); }
+        .track-meta { flex: 1; }
+        .track-status-label { font-size: 0.65rem; color: #8c8c8c; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 4px; display: block; }
+        .track-name { font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0; line-height: 1.2; }
+        .artist-name { font-size: 0.85rem; color: #8c8c8c; font-weight: 600; margin-top: 3px; display: block; }
+
+        .spotify-progress-box { width: 100%; }
+        .spotify-progress-bg { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; position: relative; cursor: pointer; transition: height 0.15s ease; }
+        .spotify-progress-bg:hover { height: 6px; }
+        .spotify-progress-fill { height: 100%; background: var(--accent-gold); width: 0%; border-radius: 10px; position: relative; }
+        .progress-indicator-dot { position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px rgba(0, 0, 0, 0.8); opacity: 0; transition: opacity 0.15s ease; }
+        .spotify-progress-bg:hover .progress-indicator-dot { opacity: 1; }
+        .time-box { display: flex; justify-content: space-between; font-size: 0.75rem; color: #727272; margin-top: 6px; font-family: 'Fira Code', monospace; }
+
+        .player-bottom-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .action-buttons { display: flex; align-items: center; gap: 16px; }
+        .action-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); width: 44px; height: 44px; border-radius: 12px; color: #b3b3b3; cursor: pointer; font-size: 1.05rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+        .action-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.15); transform: translateY(-2px); }
+        .action-btn.play-circle { background: #fff; color: #000; border: none; width: 48px; height: 48px; border-radius: 50%; font-size: 1.15rem; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1); }
+        .action-btn.play-circle:hover { background: var(--accent-gold); color: #000; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.4); transform: scale(1.08); }
+
+        .spotify-volume-group { display: flex; align-items: center; gap: 10px; }
+        .vol-btn { background: none; border: none; color: #8c8c8c; cursor: pointer; font-size: 1rem; transition: color 0.2s; }
+        .vol-btn:hover { color: #fff; }
+        .spotify-volume-slider { -webkit-appearance: none; appearance: none; width: 100px; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 5px; outline: none; cursor: pointer; }
+        .spotify-volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-gold); cursor: pointer; box-shadow: 0 0 5px var(--accent-gold); }
+
+        .visualizer-container { display: flex; align-items: flex-end; gap: 3px; height: 20px; position: absolute; right: 0; bottom: 4px; }
+        .visualizer-bar { width: 3px; height: 3px; background-color: var(--accent-gold); border-radius: 3px; transition: height 0.1s ease; }
+        .visualizer-bar.playing { animation: bounceBars 1.2s ease-in-out infinite alternate; }
+        .visualizer-bar.playing:nth-child(1) { animation-delay: 0.1s; }
+        .visualizer-bar.playing:nth-child(2) { animation-delay: 0.4s; }
+        .visualizer-bar.playing:nth-child(3) { animation-delay: 0.2s; }
+        .visualizer-bar.playing:nth-child(4) { animation-delay: 0.5s; }
+        .visualizer-bar.playing:nth-child(5) { animation-delay: 0.3s; }
+        @keyframes bounceBars { 0% { height: 3px; } 100% { height: 20px; } }
+
+        .scroll-down { margin-top: 50px; color: var(--accent-gold); animation: bounce 2s infinite; font-size: 1.5rem; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
+
+        .profile-section { display: flex; align-items: center; gap: 60px; padding: 120px 0; min-height: 90vh; }
+        .profile-text { flex: 1; }
+        .nitro-profile-card { flex: 0 0 450px; background: var(--card-bg); border-radius: 28px; border: 1px solid var(--border-color); position: relative; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,0.6); backdrop-filter: blur(10px); transition: 0.3s; }
+        .nitro-profile-card:hover { border-color: rgba(255, 204, 0, 0.3); box-shadow: 0 30px 90px rgba(255, 204, 0, 0.15); }
+        .nitro-banner { height: 150px; width: 100%; position: relative; overflow: hidden; }
+        .nitro-banner::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 60%, var(--card-bg) 100%); }
+        #banner-image { width: 100%; height: 100%; object-fit: cover; }
+        .nitro-content { padding: 0 30px 30px; position: relative; }
+        .avatar-wrap-nitro { position: relative; top: -60px; margin-bottom: -45px; display: inline-block; }
+        .avatar-main { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--card-bg); background: #1a1a2e; box-shadow: 0 5px 20px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 52px; }
+        .status-dot { position: absolute; bottom: 18px; right: 8px; width: 28px; height: 28px; border-radius: 50%; border: 6px solid var(--card-bg); background: #747f8d; transition: 0.3s; }
+        .online { background: #23a559 !important; box-shadow: 0 0 20px #23a559; }
+        .badges-container { position: absolute; top: 20px; right: 30px; display: flex; gap: 8px; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03); }
+
+        .discord-name { font-size: 2rem; font-weight: 900; margin-bottom: 2px; text-transform: uppercase; }
+        .discord-tag { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 20px; }
+        .profile-info-block { border-top: 1px solid var(--border-color); padding: 20px 0 0; }
+        .info-title { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-bottom: 8px; }
+        .about-text { font-size: 0.95rem; line-height: 1.7; color: #dcddde; }
+
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 40px; }
+        .skill-item { background: rgba(255, 255, 255, 0.02); padding: 20px; border-radius: 20px; border: 1px solid var(--border-color); transition: 0.3s; }
+        .skill-item:hover { background: rgba(255, 204, 0, 0.05); border-color: var(--accent-gold); }
+        .skill-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+        .skill-header i { color: var(--accent-gold); font-size: 1.5rem; }
+        .skill-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .skill-bar-fill { height: 100%; background: var(--gradient-text); border-radius: 10px; }
+
+        .role-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .role-badge { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .role-badge i { color: var(--accent-gold); font-size: 0.85rem; }
+
+        .friends-section { padding: 80px 0; text-align: center; }
+        .friends-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; margin-top: 50px; }
+        .friend-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 40px 30px; border-radius: 24px; width: 250px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(10px); }
+        .friend-card:hover { transform: translateY(-12px); border-color: var(--accent-gold); box-shadow: 0 20px 40px rgba(255, 204, 0, 0.1); }
+        .friend-avatar { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 20px; border: 3px solid var(--border-color); transition: 0.3s; background: #1a1a2e; display: flex; align-items: center; justify-content: center; font-size: 42px; }
+        .friend-card:hover .friend-avatar { border-color: var(--accent-gold); box-shadow: 0 0 20px var(--accent-glow); }
+        .friend-name { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
+        .friend-role { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); }
+
+        .discord-panel { padding: 80px; background: rgba(88, 101, 242, 0.04); border-radius: 40px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 50px; margin-top: 100px; }
+        .btn-join { display: inline-block; padding: 18px 40px; background: #5865F2; color: white; border-radius: 15px; text-decoration: none; font-weight: 700; transition: 0.3s; }
+        .btn-join:hover { background: #4752c4; transform: translateY(-3px); }
+
+        footer { text-align: center; padding: 80px 0; border-top: 1px solid var(--border-color); margin-top: 100px; color: var(--text-dim); }
+        footer span { color: var(--accent-gold); }
+
+        @media (max-width: 992px) {
+            .profile-section, .discord-panel { flex-direction: column; text-align: center; }
+            .nitro-profile-card { flex: 1; width: 100%; }
+            .hero h1 { font-size: 4rem; }
+            .lang-switcher { top: 15px; right: 15px; padding: 8px 14px; font-size: 0.8rem; }
+        }
+
+        .admin-pill-link {
+            position: fixed; top: 25px; right: 110px; z-index: 2000;
+            background: #0a0a0a; border: 1px solid rgba(83, 83, 83, 0.3);
+            border-radius: 50px; padding: 10px 22px; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: 0.3s; text-decoration: none;
+        }
+        .admin-pill-link:hover { border-color: #ffcc00; transform: translateY(-2px); }
+        .admin-pill-link i { color: #ffcc00; }
+        .admin-pill-link span { color: #fff; font-weight: 800; font-size: 0.85rem; }
+    </style>
+
+    <a href="login.html" class="admin-pill-link">
+        <i class="fa-solid fa-lock"></i>
+        <span>Admin Panel</span>
+    </a>
+</head>
+<body>
+
+    <div id="particles-js"></div>
+    <div class="glow-overlay"></div>
+
+    <div class="lang-switcher" onclick="toggleLang()">
+        <i class="fa-solid fa-earth-americas"></i>
+        <span id="langBtn">EN</span>
+    </div>
+
+    <div class="sidebar-nav">
+        <a href="#home"><i class="fa-solid fa-house"></i></a>
+        <a href="#tanitim"><i class="fa-solid fa-user-check"></i></a>
+        <a href="#skills"><i class="fa-solid fa-bolt"></i></a>
+        <a href="#friends"><i class="fa-solid fa-users"></i></a>
+        <a href="#discord"><i class="fa-brands fa-discord"></i></a>
+    </div>
+
+    <div class="container">
+        <header class="hero" id="home">
+            <h1 data-aos="zoom-in" class="grad-text">emeklireis</h1>
+
+            <h2 data-aos="zoom-in" class="grad-text" data-lang="hero-title">"Denizin sınırlarını çizer, tecrübenin geleceğini inşa ederim."</h2>
+            
+            <div class="spotify-player" data-aos="fade-up" data-aos-delay="200">
+                <div class="player-top">
+                    <div style="width:80px;height:80px;border-radius:12px;background:linear-gradient(135deg,#0d1b2a,#1b3a4b);display:flex;align-items:center;justify-content:center;font-size:38px;flex-shrink:0;box-shadow:0 8px 20px rgba(0,0,0,0.5);" id="hero-track-emoji">⚓</div>
+                    <div class="track-meta">
+                        <span class="track-status-label" data-lang="spotify-playing">OYNATILIYOR...</span>
+                        <h2 class="track-name grad-text" id="hero-track-title">Yeniden</h2>
+                        <span class="artist-name" id="hero-track-artist">Ragga Oktay</span>
+                    </div>
+
+                    <div class="visualizer-container" id="visualizer">
+                        <div class="visualizer-bar"></div>
+                        <div class="visualizer-bar"></div>
+                        <div class="visualizer-bar"></div>
+                        <div class="visualizer-bar"></div>
+                        <div class="visualizer-bar"></div>
+                    </div>
+                </div>
+
+                <div class="spotify-progress-box">
+                    <div class="spotify-progress-bg" id="progress-container">
+                        <div class="spotify-progress-fill" id="hero-track-fill">
+                            <div class="progress-indicator-dot"></div>
+                        </div>
+                    </div>
+                    <div class="time-box">
+                        <span id="current-time">0:00</span>
+                        <span id="total-time">0:00</span>
+                    </div>
+                </div>
+
+                <div class="player-bottom-controls">
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="prevTrack()"><i class="fa-solid fa-backward"></i></button>
+                        <button class="action-btn play-circle" onclick="togglePlay()"><i class="fa-solid fa-play" id="play-icon"></i></button>
+                        <button class="action-btn" onclick="nextTrack()"><i class="fa-solid fa-forward"></i></button>
+                    </div>
+                    <div class="spotify-volume-group">
+                        <button class="vol-btn" id="volume-btn" onclick="toggleMute()"><i class="fa-solid fa-volume-high"></i></button>
+                        <input type="range" class="spotify-volume-slider" id="volume-slider" min="0" max="1" step="0.01" value="0.5" oninput="setVolume(this.value)">
+                    </div>
+                </div>
+                <audio id="hero-audio" src="sarki.mp3"></audio>
+            </div>
+
+            <a href="#tanitim" class="scroll-down"><i class="fa-solid fa-chevron-down"></i></a>
+        </header>
+
+        <section id="tanitim" class="profile-section">
+            <div class="profile-text" data-aos="fade-right">
+                <span style="color:var(--accent-gold); font-weight:800; letter-spacing:2px;">#.EMEKLİREİS</span>
+                <h2 style="font-size: 3rem; margin: 10px 0 20px; font-weight: 800;" class="grad-text" data-lang="about-title">Emekli Kaptan</h2>
+                <p style="color: var(--text-dim); font-size: 1.15rem; line-height: 1.9;" data-lang="about-text">
+                    Ben <b class="grad-text">emeklireis</b>. Yıllar boyunca denizde karmaşık rotaları basite indirgiyor, topluluk ve yaşam deneyimlerini dijital sanata dönüştürüyorum. Kaptanlık günlerinden dijital dünyaya, sadece geçmiş yaşamıyor; geleceği de inşa ediyorum.
+                </p>
+            </div>
+            
+            <div class="nitro-profile-card" data-aos="fade-left">
+                <div class="badges-container" id="badges-list"></div>
+                <div class="nitro-banner" style="background:linear-gradient(135deg,#0d1b2a 0%,#1b3a4b 50%,#0d1b2a 100%);display:flex;align-items:center;justify-content:center;font-size:70px;">
+                    🌊
+                </div>
+                <div class="nitro-content">
+                    <div class="avatar-wrap-nitro">
+                        <div class="avatar-main">⚓</div>
+                        <div id="status-dot" class="status-dot online"></div>
+                    </div>
+                    <h2 class="discord-name grad-text">EMEKLİREİS</h2>
+                    <p id="usertag" class="discord-tag">@emeklireis</p>
+                    
+                    <div class="profile-info-block">
+                        <div class="info-title" data-lang="card-about">HAKKIMDA</div>
+                        <p id="custom-status" class="about-text">"Emekli olan kaptan değil, sadece rotası değişir."</p>
+                        
+                        <div class="info-title" style="margin-top: 20px;" data-lang="card-skills">UZMANLIK ALANLARI</div>
+                        <div class="role-container">
+                            <div class="role-badge"><i class="fa-solid fa-anchor"></i> Kaptan</div>
+                            <div class="role-badge"><i class="fa-solid fa-water"></i> Denizci</div>
+                            <div class="role-badge"><i class="fa-solid fa-compass"></i> Navigatör</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" style="padding-top: 100px;">
+            <h2 class="grad-text" style="font-size: 3.5rem; text-align: center; font-weight: 800; margin-bottom: 50px;" data-lang="section-skills">Teknik Yetenekler</h2>
+            <div class="skills-grid" data-aos="fade-up">
+                <div class="skill-item">
+                    <div class="skill-header"><i class="fa-solid fa-anchor"></i> <span>Deniz Navigasyonu</span></div>
+                    <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 99%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-header"><i class="fa-solid fa-ship"></i> <span>Gemi Yönetimi</span></div>
+                    <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 95%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-header"><i class="fa-solid fa-compass"></i> <span data-lang="skill-web">Rota Planlama</span></div>
+                    <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 90%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-header"><i class="fa-solid fa-wind"></i> <span data-lang="skill-cyber">Meteoroloji</span></div>
+                    <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 85%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-header"><i class="fa-solid fa-radio"></i> <span>Deniz Haberleşmesi</span></div>
+                    <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 88%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-header"><i class="fa-solid fa-life-ring"></i> <span>Deniz Kurtarma</span></div>
+                    <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 92%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-header"><i class="fa-solid fa-map"></i> <span data-lang="skill-design">Kartografi</span></div>
+                    <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 80%;"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="friends" class="friends-section">
+            <h2 class="grad-text" style="font-size: 3.5rem; font-weight: 800;" data-aos="fade-up" data-lang="section-friends">Best Friends</h2>
+            <div class="friends-grid">
+                <div class="friend-card" data-aos="fade-right" data-aos-delay="100">
+                    <div class="friend-avatar">⚓</div>
+                    <div class="friend-name grad-text">Tayfa Mehmet</div>
+                    <div class="friend-role grad-text">Baş Tayfa</div>
+                </div>
+                <div class="friend-card" data-aos="fade-left" data-aos-delay="200">
+                    <div class="friend-avatar">🧭</div>
+                    <div class="friend-name grad-text">Seyir Ahmet</div>
+                    <div class="friend-role grad-text">Navigatör</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="discord">
+            <div class="discord-panel" data-aos="flip-up">
+                <div style="flex: 1;">
+                    <h2 style="font-size: 2.5rem; margin-bottom: 20px;" class="grad-text" data-lang="discord-title">Topluluğumuza Katıl</h2>
+                    <p style="color: var(--text-dim); margin-bottom: 30px;" data-lang="discord-desc">Projelerimizi incelemek ve destek almak için EMEKLİREİS sunucusuna bekliyoruz, iletişim için Katıl.</p>
+                    <a href="https://discord.gg/" target="_blank" class="btn-join"><i class="fa-brands fa-discord"></i> <span data-lang="discord-btn">KATIL</span></a>
+                </div>
+                <div style="flex: 0 0 350px;">
+                    <iframe src="https://discord.com/widget?id=1175438975729672215&theme=dark" width="100%" height="400" allowtransparency="true" frameborder="0"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <footer><p>© 2026 <span class="grad-text">emeklireis</span> - <span data-lang="footer-text">Designed by emeklireis</span></p></footer>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+        particlesJS("particles-js", { "particles": { "number": { "value": 50 }, "color": { "value": "#ffcc00" }, "opacity": { "value": 0.1 }, "size": { "value": 2 }, "line_linked": { "enable": true, "distance": 150, "color": "#ffcc00", "opacity": 0.05 } } });
+
+        const playlist = [
+            { title: "Yeniden", artist: "Ragga Oktay", file: "sarki.mp3", emoji: "⚓" },
+            { title: "Açık Deniz", artist: "emeklireis", file: "", emoji: "🌊" }
+        ];
+        let currentIdx = 0;
+        const audio = document.getElementById('hero-audio');
+        const playIcon = document.getElementById('play-icon');
+        const trackFill = document.getElementById('hero-track-fill');
+        const progressContainer = document.getElementById('progress-container');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeBtn = document.getElementById('volume-btn');
+        const visualizerBars = document.querySelectorAll('.visualizer-bar');
+        const currentTimeEl = document.getElementById('current-time');
+        const totalTimeEl = document.getElementById('total-time');
+        let lastVolume = 0.5;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            audio.volume = 0.5;
+            volumeSlider.value = 0.5;
+            loadTrack(currentIdx);
+        });
+
+        function loadTrack(idx) {
+            currentIdx = idx;
+            if (playlist[currentIdx].file) audio.src = playlist[currentIdx].file;
+            document.getElementById('hero-track-title').innerText = playlist[currentIdx].title;
+            document.getElementById('hero-track-artist').innerText = playlist[currentIdx].artist;
+            document.getElementById('hero-track-emoji').innerText = playlist[currentIdx].emoji;
+            trackFill.style.width = '0%';
+            currentTimeEl.innerText = "0:00";
+            totalTimeEl.innerText = "0:00";
+        }
+
+        function togglePlay() {
+            if (!playlist[currentIdx].file) { alert("MP3 dosyası henüz eklenmedi. playlist dizisindeki file alanına mp3 yolunu yaz."); return; }
+            if (audio.paused) {
+                audio.play().then(() => { playIcon.className = "fa-solid fa-pause"; toggleVisualizer(true); }).catch(e => console.log(e));
+            } else {
+                audio.pause(); playIcon.className = "fa-solid fa-play"; toggleVisualizer(false);
+            }
+        }
+
+        function nextTrack() {
+            currentIdx = (currentIdx + 1) >= playlist.length ? 0 : currentIdx + 1;
+            loadTrack(currentIdx);
+            if (playlist[currentIdx].file) audio.play().then(() => { playIcon.className = "fa-solid fa-pause"; toggleVisualizer(true); });
+        }
+
+        function prevTrack() {
+            currentIdx = (currentIdx - 1) < 0 ? playlist.length - 1 : currentIdx - 1;
+            loadTrack(currentIdx);
+            if (playlist[currentIdx].file) audio.play().then(() => { playIcon.className = "fa-solid fa-pause"; toggleVisualizer(true); });
+        }
+
+        function formatTime(secs) {
+            if (isNaN(secs)) return "0:00";
+            return Math.floor(secs / 60) + ":" + (Math.floor(secs % 60) < 10 ? "0" : "") + Math.floor(secs % 60);
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                trackFill.style.width = (audio.currentTime / audio.duration * 100) + "%";
+                currentTimeEl.innerText = formatTime(audio.currentTime);
+                totalTimeEl.innerText = formatTime(audio.duration);
+            }
+        });
+
+        audio.addEventListener('ended', () => nextTrack());
+
+        progressContainer.addEventListener('click', (e) => {
+            if (audio.duration) audio.currentTime = (e.offsetX / progressContainer.clientWidth) * audio.duration;
+        });
+
+        function setVolume(val) {
+            audio.volume = val;
+            if (val == 0) volumeBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+            else if (val < 0.4) volumeBtn.innerHTML = '<i class="fa-solid fa-volume-low"></i>';
+            else volumeBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+        }
+
+        function toggleMute() {
+            if (audio.volume > 0) { lastVolume = audio.volume; setVolume(0); volumeSlider.value = 0; }
+            else { setVolume(lastVolume); volumeSlider.value = lastVolume; }
+        }
+
+        function toggleVisualizer(play) {
+            visualizerBars.forEach(b => play ? b.classList.add('playing') : b.classList.remove('playing'));
+        }
+
+        const translations = {
+            "hero-title": '"I chart the boundaries of the sea, I build the future of experience."',
+            "spotify-playing": "NOW PLAYING...",
+            "about-title": "Retired Captain",
+            "about-text": 'I am <b>emeklireis</b>. For years I simplified complex routes at sea, transforming community and life experiences into digital art. From captaincy days to the digital world, the past is not just lived — the future is also being built.',
+            "card-about": "ABOUT ME",
+            "card-skills": "AREAS OF EXPERTISE",
+            "section-skills": "Technical Skills",
+            "skill-web": "Route Planning",
+            "skill-cyber": "Meteorology",
+            "skill-design": "Cartography",
+            "section-friends": "Best Friends",
+            "discord-title": "Join Our Community",
+            "discord-desc": "We are waiting for you at the EMEKLİREİS server to examine our projects and get support. Click Join to contact us.",
+            "discord-btn": "JOIN",
+            "footer-text": "Designed by emeklireis"
+        };
+
+        function toggleLang() {
+            const btn = document.getElementById('langBtn');
+            const isEn = btn.innerText === 'TR';
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                const key = el.getAttribute('data-lang');
+                if (!el.dataset.tr) el.dataset.tr = el.innerHTML;
+                el.innerHTML = isEn ? el.dataset.tr : (translations[key] || el.innerHTML);
+            });
+            btn.innerText = isEn ? 'EN' : 'TR';
+        }
+    </script>
+</body>
+</html>
